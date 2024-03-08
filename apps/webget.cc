@@ -9,8 +9,42 @@ using namespace std;
 
 void get_URL( const string& host, const string& path )
 {
-  cerr << "Function called: get_URL(" << host << ", " << path << ")\n";
-  cerr << "Warning: get_URL() has not been implemented yet.\n";
+  // cerr << "Function called: get_URL(" << host << ", " << path << ")\n";
+  // cerr << "Warning: get_URL() has not been implemented yet.\n";
+  TCPSocket sock1;
+  sock1.connect( Address( host, "http" ) );
+
+  sock1.write( "GET " + path + " HTTP/1.1\r\n" );
+  sock1.write( "Host: " + host + "\r\n" );
+  sock1.write( "Connection: close\r\n" );
+  sock1.write( "\r\n" );
+  // sock1.shutdown( SHUT_WR );
+
+  std::string buffer;
+  while ( !sock1.eof() ) {
+    sock1.read( buffer );
+    std::cout << buffer;
+    buffer.clear();
+  }
+
+  sock1.close();
+
+  // TCPSocket sck {};
+  // sck.connect( Address( host, "http" ) );
+  // sck.write( format( "GET {} HTTP/1.1\r\n"
+  //                    "Host: {}\r\n"
+  //                    "Connection: close\r\n"
+  //                    "\r\n",
+  //                    path,
+  //                    host ) );
+  // sck.shutdown( SHUT_WR );
+  // std::string buf;
+  // while ( !sck.eof() ) {
+  //   sck.read( buf );
+  //   std::cout << buf;
+  //   buf.clear();
+  // }
+  // sck.close();
 }
 
 int main( int argc, char* argv[] )
