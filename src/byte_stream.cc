@@ -28,9 +28,9 @@ void Writer::push( string data )
   }
 
   // 临界条件,pop空了bytes_
-  // if (view_wnd_.empty() && !bytes_.empty() ) {
-  //   view_wnd_ = bytes_.front();
-  // }
+  if ( view_wnd_.empty() && !bytes_.empty() ) {
+    view_wnd_ = bytes_.front();
+  }
 }
 
 void Writer::close()

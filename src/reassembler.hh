@@ -2,6 +2,11 @@
 
 #include "byte_stream.hh"
 
+#include <list>
+#include <set>
+#include <string>
+#include <tuple>
+
 class Reassembler
 {
 public:
@@ -42,4 +47,19 @@ public:
 
 private:
   ByteStream output_; // the Reassembler writes to this ByteStream
+
+  // denghaowen
+  uint64_t next_assembel_index_ {}; // 下一个期待的字节序号
+  uint64_t num_bytes_pending_ {};
+  uint64_t unacceptable_index_ {};
+
+  // using TupleType = std::tuple<uint64_t, std::string, bool>;
+  std::list<std::tuple<uint64_t, std::string, bool>> Unassembled_ {}; // 一个有序的、无重复的缓冲区
+  //  std::vector<std::tuple<uint64_t, std::string, bool>> Unassembled_ {};
+
+  void push_bytes( uint64_t first_index, std::string data, bool is_last_substring );
+  void cache_bytes( uint64_t first_index, std::string data, bool is_last_substring );
+  void flush_buffer(); // 刷新缓冲区，把能推入的数据推入流中
+
+  // int merge_substring(uint64_t index, std::string &data, uint64_t index2, std::string data2);
 };
