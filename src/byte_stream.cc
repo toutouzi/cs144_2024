@@ -25,12 +25,16 @@ void Writer::push( string data )
     num_bytes_buffered_ += data.size();
     num_bytes_pushed_ += data.size();
     bytes_.emplace( move( data ) );
+    
+    //初始化view
+    if ( view_wnd_.empty() ) {
+      view_wnd_ = bytes_.front();
+    }
   }
-
-  // 临界条件,pop空了bytes_
-  if ( view_wnd_.empty() && !bytes_.empty() ) {
-    view_wnd_ = bytes_.front();
-  }
+  // 初始化view ，不能用view_wnd_ = bytes_.front();
+  // if ( view_wnd_.empty( ) {
+  //   view_wnd_ = bytes_.front();
+  // }
 }
 
 void Writer::close()
@@ -75,13 +79,17 @@ string_view Reader::peek() const
 void Reader::pop( uint64_t len )
 {
   // Your code here.
-  if ( len >= view_wnd_.size() ) {
-    bytes_.pop();
-    view_wnd_ = bytes_.empty() ? ""sv : bytes_.front();
-  } else
-    view_wnd_.remove_prefix( len );
+  len = min( len, num_bytes_buffered_ );
   num_bytes_buffered_ -= len;
   num_bytes_popped_ += len;
+  
+  while ( len >= view_wnd_.size() && len != 0) {
+    len -= view_wnd_.size();
+    bytes_.pop();
+    view_wnd_ = bytes_.empty() ? ""sv : bytes_.front();
+  }
+  if ( len != 0)
+    view_wnd_.remove_prefix( len );
 }
 
 uint64_t Reader::bytes_buffered() const
